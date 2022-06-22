@@ -4,38 +4,46 @@ struct GP <: GP_type
     X::Vector{Float64}
     mean::Vector{Float64}
     cov_func
-    data_cov::Matrix{Float64}
 end
 
-GP(X, mean, cov_func; data_cov=nothing) = begin
-    if data_cov == nothing
-        N = length(mean)
-        data_cov = zeros(N,N)
+GP(X, mean, cov_func) = begin
+    GP(X, mean, cov_fuc)
+end
+
+struct latent_GP <: GP_type
+    X::Vector{Float64}
+    mean::Vector{Float64}
+    latent_gp
+    cov_func
+end
+
+latent_GP(X, mean, cov_func) = begin
+    kernel = cov_func(X)
+    N = length(X)
+    nodes = rand(MvNormal(zeros(N), ones(N)))
+    latent_gp = mean .+ cholesky(kernel).U' * nodes
+    latent_GP(X, mean, latent_gp, cov_func)
+end
+
+
+function marginal_lkl(GP::GP_type; data_cov=nothing)
+    kernel = GP.cov_func(GP.X)
+    if data_cov != nothing
+        kernel .+= data_cov
     end
-    GP(X, mean, cov_fuc, data_cov)
+    return MvNormal(GP.mean, kernel)
 end
 
-function marginal_lkl(GP::GP_type)
-    kernel = GP.cov_func(GP.X)
-    return MvNormal(GP.mean, kernel + GP.data_cov)
-end
-
-function latent_func(nodes, GP::GP_type)
-    kernel = GP.cov_func(GP.X)
-    latent_gp = GP.mean .+ cholesky(kernel).U' * nodes
-    gp = conditional(latent_gp)
-end
-
-function conditional(new_X, nodes, GP::GP_type)
-    N = length(GP.X)
-    Z = [GP.X; new_X]
-    Kernel = GP.cov_func(Z)
+function conditional(new_X, latent_GP::GP_type)
+    N = length(latent_GP.X)
+    Z = [new_X; latent_GP.X]
+    K = latent_GP.cov_func(Z)
     Koo = K[(N+1):end, (N+1):end]    
     Kno = K[1:N, (N+1):end]          
     
     Koo_inv = inv(Koo)
     C = Kno * Koo_inv
-    return C * nodes
+    return C * latent_GP.latent_gp
 end
 
 function posterior_predict(old_X, new_X, old_mean, 
