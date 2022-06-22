@@ -10,7 +10,7 @@ end
 GP(X, mean, cov_func; data_cov=nothing) = begin
     if data_cov == nothing
         N = length(mean)
-        data_cob = zeros(N,N)
+        data_cov = zeros(N,N)
     end
     GP(X, mean, cov_fuc, data_cov)
 end
@@ -28,7 +28,7 @@ end
 
 function conditional(new_X, nodes, GP::GP_type)
     N = length(GP.X)
-    Z = [GP.X, new_X]
+    Z = [GP.X; new_X]
     Kernel = GP.cov_func(Z)
     Koo = K[(N+1):end, (N+1):end]    
     Kno = K[1:N, (N+1):end]          
@@ -38,19 +38,30 @@ function conditional(new_X, nodes, GP::GP_type)
     return C * nodes
 end
 
-function posterior_predict(new_X, new_mean, data, GP::GP_type)
+function posterior_predict(old_X, new_X, old_mean, 
+                           new_mean, data, cov_func;
+                           data_cov=nothing)
+    
+    if data_cov == nothing
+        N = length(data)
+        data_cov = zeros(N,N)
+    end
+    
     M = size(new_X, 1)
-    Z = [GP.X, new_X]
+    Z = [new_X; old_X]
     
-    Kernel = GP.cov_func(Z)
-    Koo = K[(M+1):end, (M+1):end] + GP.data_cov
-    Knn = K[1:M, 1:M]
-    Kno = K[1:M, (M+1):end]
-    
-    Koo_inv = inv(Koo)
-    C = Kno * Koo_inv
-    
-    m = C * (data - GP.mean) + new_mean
-    S = Matrix(LinearAlgebra.Hermitian(Knn - C * Kno'))
-    return MvNormal(m, S)
+    return (;kwargs...) -> let
+        cov_fn = cov_func(kwargs[:eta], kwargs[:l])
+        K = cov_fn(Z)
+        Koo = K[(M+1):end, (M+1):end] + data_cov
+        Knn = K[1:M, 1:M]
+        Kno = K[1:M, (M+1):end]
+
+        Koo_inv = inv(Koo)
+        C = Kno * Koo_inv
+
+        m = C * (data - old_mean) + new_mean
+        S = Matrix(LinearAlgebra.Hermitian(Knn - C * Kno'))
+        return MvNormal(m, S)
+    end
 end
