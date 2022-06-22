@@ -1,5 +1,5 @@
 using Test
-using GuassianProcess
+using GaussianProcess
 
 @testset "All tests" begin
     

@@ -1,5 +1,5 @@
 # Squared-exponential covariance function
-function sqexp_cov_fn(X, eta, l, delta=0.005)
+function sqexp_cov_fn(eta, l; delta=0.005)
     function cov_func(X)
         if length(size(X)) == 1 
             X_mat = zeros(length(X), 1)
@@ -14,7 +14,7 @@ function sqexp_cov_fn(X, eta, l, delta=0.005)
 end 
 
 # Exponential covariance function
-function exp_cov_fn(X, eta, l, delta=0.005)
+function exp_cov_fn(eta, l; delta=0.005)
     function cov_func(X)
         if length(size(X)) == 1 
             X_mat = zeros(length(X), 1)

@@ -12,7 +12,7 @@ GP(X, mean, cov_func; data_cov=nothing) = begin
         N = length(mean)
         data_cob = zeros(N,N)
     end
-    GP(mean, cov_fuc, data_cov)
+    GP(X, mean, cov_fuc, data_cov)
 end
 
 function marginal_lkl(GP::GP_type)
