@@ -1,7 +1,7 @@
 abstract type GP_type end
 
 struct GP <: GP_type
-    X::Vector{Float64}
+    X::Matrix{Float64}
     mean::Vector{Float64}
     cov_func
 end
@@ -11,18 +11,18 @@ GP(X, mean, cov_func) = begin
 end
 
 struct latent_GP <: GP_type
-    X::Vector{Float64}
+    X::Matrix{Float64}
     mean::Vector{Float64}
+    nodes
     latent_gp
     cov_func
 end
 
-latent_GP(X, mean, cov_func) = begin
+latent_GP(X, mean, nodes, cov_func) = begin
     kernel = cov_func(X)
     N = length(X)
-    nodes = rand(MvNormal(zeros(N), ones(N)))
     latent_gp = mean .+ cholesky(kernel).U' * nodes
-    latent_GP(X, mean, latent_gp, cov_func)
+    latent_GP(X, mean, nodes, latent_gp, cov_func)
 end
 
 
@@ -35,7 +35,7 @@ function marginal_lkl(GP::GP_type; data_cov=nothing)
 end
 
 function conditional(new_X, latent_GP::GP_type)
-    N = length(latent_GP.X)
+    N, P = size(new_X)
     Z = [new_X; latent_GP.X]
     K = latent_GP.cov_func(Z)
     Koo = K[(N+1):end, (N+1):end]    
