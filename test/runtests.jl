@@ -16,7 +16,7 @@ using LinearAlgebra
         lin_K_bm = 1.0 .+ 0.5.* (X' .* X)
         noise_K_bm = 0.5 * I
         ratquad_K_bm =  @.(0.5*(1 + abs(D)^2)^0.5)
-        sin_K_bm = @.(0.5 * exp(-2*sin(D/2)^2 / (0.5^2))
+        sin_K_bm = @.(0.5 * exp(-2*sin(D/2)^2 / (0.5^2)))
         sqexp_K_bm = @. exp(-D^2)
         exp_K_bm = @. exp(-D)
 
