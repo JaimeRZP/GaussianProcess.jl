@@ -24,7 +24,7 @@ using LinearAlgebra
         lin_K = lin_cov_fn(X; C=1, a=0.5)
         noise_K = noise_cov_fn(X; d=0.5)
         ratquad_K = ratquad_cov_fn(X; eta=0.5, alpha=0.5)
-        sin_K = sin_cov_fn(x; eta=0.5, l=0.5)
+        sin_K = sin_cov_fn(X; eta=0.5, l=0.5)
         sqexp_K = sqexp_cov_fn(X; eta=1, l=0.5)
         exp_K = exp_cov_fn(X; eta=1, l=1)
             

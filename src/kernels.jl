@@ -46,7 +46,7 @@ lin_cov_fn(x; C=0.05, a=1.0)
 ```
 """
 function lin_cov_fn(X; delta=0.0005, kwargs...)
-    return  kwargs[:C] + kwargs[:a].*(X' .* X) + delta * I
+    return  kwargs[:C] .+ kwargs[:a].*(X' .* X) + delta * I
 end
 
 """
