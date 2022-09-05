@@ -28,13 +28,13 @@ using LinearAlgebra
         sqexp_K = sqexp_cov_fn(X; eta=1, l=0.5)
         exp_K = exp_cov_fn(X; eta=1, l=1)
             
-        @test all(@. (abs(const_K/const_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(lin_K/lin_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(noise_K/noise_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(ratquad_K/ratquad_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(sin_K/sin_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(sqexp_K/sqexp_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(exp_K/exp_K_bm-1.0) < 0.00051))
+        @test all(@. (abs(const_K-const_K_bm) < 0.00051))
+        @test all(@. (abs(lin_K-lin_K_bm) < 0.00051))
+        @test all(@. (abs(noise_K-noise_K_bm) < 0.00051))
+        @test all(@. (abs(ratquad_K-ratquad_K_bm) < 0.00051))
+        @test all(@. (abs(sin_K-sin_K_bm) < 0.00051))
+        @test all(@. (abs(sqexp_K-sqexp_K_bm) < 0.00051))
+        @test all(@. (abs(exp_K-exp_K_bm) < 0.00051))
     end
     
     @testset "marginal_lkl" begin   
