@@ -12,7 +12,7 @@ using LinearAlgebra
         X_mat[:,1] = X
         D = pairwise(Distances.Euclidean(), X_mat, dims=1)
 
-        C_K_bm = 1.0
+        const_K_bm = 1.0
         lin_K_bm = 1.0 .+ 0.5.* (X' .* X)
         noise_K_bm = 0.5 * I
         ratquad_K_bm =  @.(0.5*(1 + abs(D)^2)^0.5)
@@ -20,7 +20,7 @@ using LinearAlgebra
         sqexp_K_bm = @. exp(-D^2)
         exp_K_bm = @. exp(-D)
 
-        C_K = const_cov_fn(X; C=1)
+        const_K = const_cov_fn(X; C=1)
         lin_K = lin_cov_fn(X; C=1, a=0.5)
         noise_K = noise_cov_fn(X; d=0.5)
         ratquad_K = ratquad_cov_fn(X; eta=0.5, alpha=0.5)
