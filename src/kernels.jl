@@ -127,7 +127,7 @@ sin_cov_fn(x; eta=0.05, l=1.0)
 function sin_cov_fn(X; delta=0.0005, kwargs...)
     X_mat = _turn_into_mat(X)
     D = pairwise(Distances.Euclidean(), X_mat, dims=1)
-    return @.(kwargs[:eta] * exp(-2*sin(D/2)^2 / (kwargs[:l]^2))) + delta * I) + delta * I
+    return @.(kwargs[:eta] * exp(-2*sin(D/2)^2 / (kwargs[:l]^2))) + delta * I
 end
 
 """
