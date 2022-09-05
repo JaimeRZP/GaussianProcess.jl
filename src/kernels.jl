@@ -71,7 +71,8 @@ noise_cov_fn(x; d=1.0)
 ```
 """
 function noise_cov_fn(X; delta=0.0005, kwargs...)
-    return  (delta + kwargs[:d]) * I
+    N = length(X)
+    return (delta + kwargs[:d]) * Matrix(I, N, N)
 end
 
 """
