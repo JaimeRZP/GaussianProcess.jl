@@ -12,14 +12,29 @@ using LinearAlgebra
         X_mat[:,1] = X
         D = pairwise(Distances.Euclidean(), X_mat, dims=1)
 
+        const_K_bm = 1.0
+        lin_K_bm = 1.0 .+ 0.5.* (X' .* X)
+        noise_K_bm = 0.5 * Matrix(I, N, N)
+        ratquad_K_bm =  @.(0.5*(1 + abs(D)^2)^-0.5)
+        sin_K_bm = @.(0.5 * exp(-2*sin(D/2)^2 / (0.5^2)))
         sqexp_K_bm = @. exp(-D^2)
         exp_K_bm = @. exp(-D)
 
+        const_K = const_cov_fn(X; C=1)
+        lin_K = lin_cov_fn(X; C=1, a=0.5)
+        noise_K = noise_cov_fn(X; d=0.5)
+        ratquad_K = ratquad_cov_fn(X; eta=0.5, alpha=0.5)
+        sin_K = sin_cov_fn(X; eta=0.5, l=0.5)
         sqexp_K = sqexp_cov_fn(X; eta=1, l=0.5)
         exp_K = exp_cov_fn(X; eta=1, l=1)
-
-        @test all(@. (abs(sqexp_K/sqexp_K_bm-1.0) < 0.00051))
-        @test all(@. (abs(exp_K/exp_K_bm-1.0) < 0.00051))
+            
+        @test all(@. (abs(const_K-const_K_bm) < 0.00051))
+        @test all(@. (abs(lin_K-lin_K_bm) < 0.00051))
+        @test all(@. (abs(noise_K-noise_K_bm) < 0.00051))
+        @test all(@. (abs(ratquad_K-ratquad_K_bm) < 0.00051))
+        @test all(@. (abs(sin_K-sin_K_bm) < 0.00051))
+        @test all(@. (abs(sqexp_K-sqexp_K_bm) < 0.00051))
+        @test all(@. (abs(exp_K-exp_K_bm) < 0.00051))
     end
     
     @testset "marginal_lkl" begin   
