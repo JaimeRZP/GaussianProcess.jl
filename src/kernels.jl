@@ -157,7 +157,36 @@ function sqexp_cov_fn(X; delta=0.0005, kwargs...)
     X_mat = _turn_into_mat(X)
     D = pairwise(Distances.Euclidean(), X_mat, dims=1)
     return @.(kwargs[:eta] * exp(-D^2 / (2*kwargs[:l]))) + delta * I
+end
+
+"""
+    sqexp_cov_grad(X; delta=0.0005, kwargs...)
+
+Gradient of the square exponential kernel. 
+
+Arguments:
+
+- `X::Vector{Float}` : node's position vector 
+- `delta::Float` : strength of white noise component for numerical stability. 
+- `eta::Number` : covariance matrix amplitude.
+- `l::Number` : covariance matrix correlation length.
+
+Returns:
+
+- `cov_mat::Matrix` : GP's covariance matrix
+
+Usage:
+
+```julia
+sqexp_cov_grad(x; eta=0.05, l=1.0)
+```
+"""
+function sqexp_cov_grad(X; delta=0.0005, kwargs...)
+    X_mat = _turn_into_mat(X)
+    D = pairwise(Distances.Euclidean(), X_mat, dims=1)
+    return @.(kwargs[:eta]^2 *((1/kwargs[:eta]) - (D/kwargs[:eta])^2) * exp(-D^2 / (2*kwargs[:l]))) + delta * I
 end 
+
 
 """
     exp_cov_fn(X; delta=0.0005, kwargs...)
