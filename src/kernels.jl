@@ -185,7 +185,7 @@ function sqexp_cov_grad(X; delta=0.0005, kwargs...)
     X_mat = _turn_into_mat(X)
     D = pairwise(Distances.Euclidean(), X_mat, dims=1)
     dK = @.((-1/kwargs[:l]) + (D/kwargs[:l])^2)
-    return @.( dK * sqexp_cov_fn(X; delta=delta, kwargs...))
+    return @.(dK * kwargs[:eta] * exp(-D^2 / (2*kwargs[:l]))) + delta * I
 end 
 
 
