@@ -108,8 +108,6 @@ function conditional(old_X, new_X, latent_gp, cov_fn; kwargs...)
     K = cov_fn(Z; kwargs...)
     Koo = K[(N+1):end, (N+1):end]    
     Kno = K[1:N, (N+1):end]          
-    
-    Koo_inv = inv(Koo)
-    C = Kno * Koo_inv
+    C = Kno / Koo
     return C * latent_gp
 end
